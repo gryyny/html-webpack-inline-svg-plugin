@@ -189,8 +189,6 @@ HtmlWebpackInlineSVGPlugin.prototype.getInlineImage = function (documentFragment
 
         if (_.filter(childNode.attrs, { name: 'inline' }).length) {
 
-          console.log('inlineImage = childNode')
-
           inlineImage = childNode
         }
 
@@ -279,101 +277,5 @@ HtmlWebpackInlineSVGPlugin.prototype.replaceImageWithSVG = function (html, inlin
     return html.substring(0, start) + svg + html.substring(end)
 
 }
-
-// HtmlWebpackInlineSVGPlugin.prototype.apply = function (compiler) {
-
-//     // Hook into the html-webpack-plugin processing
-//     compiler.plugin('compilation', (compilation) => {
-
-//         compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
-
-//             $ = cheerio.load(htmlPluginData.html, {
-//                 decodeEntities: false
-//             })
-
-//             // find img tags with an inline attribute
-//             const $imgs = $('img[inline]')
-
-//             const imgArray = []
-
-//             $imgs.each((index, img) => {
-
-//                 const svgSrc = $(img).attr('src')
-
-//                 // must be referencing a file with a .svg extension
-//                 if (svgSrc && svgSrc.indexOf('.svg') !== -1) {
-
-//                     imgArray.push({
-//                         img,
-//                         svgSrc,
-//                     })
-
-//                 }
-
-//             })
-
-//             Promise.all(imgArray.map(imgObject => this.processImage(htmlPluginData, imgObject)))
-//                 .then(() => {
-
-//                     const html = $.html()
-
-//                     htmlPluginData.html = html || htmlPluginData.html
-
-//                     // cheerio will remove closing body and html tags if the document
-
-//                     callback(null, htmlPluginData)
-
-//                 })
-//                 .catch((err) => {
-
-//                     const errorMessage =
-//                         err.message ?
-//                         err.message :
-//                         'One of your inline SVGs hit an error, likely caused by the file not being found'
-
-//                     console.error(chalk.red(errorMessage))
-
-//                 })
-
-//         })
-
-//     })
-
-// }
-
-// HtmlWebpackInlineSVGPlugin.prototype.processImage = (htmlPluginData, imgObject) =>
-
-//     new Promise((resolve, reject) => {
-
-//         fs.readFile(path.resolve(imgObject.svgSrc), 'utf8', (err, data) => {
-
-//             if (err) reject(err)
-
-//             const configObj = Object.assign(svgoDefaultConfig, userConfig)
-
-//             const config = {}
-
-//             // pass all objects to the config.plugins array
-//             config.plugins = _.map(configObj, (value, key) => ({ [key]: value }));
-
-//             const svgo = new SVGO(config)
-
-//             svgo.optimize(data, (result) => {
-
-//                 if (result.error) reject(result.error)
-
-//                 const optimisedSVG = result.data
-
-//                 $(imgObject.img).after(optimisedSVG)
-
-//                 $(imgObject.img).remove()
-
-//                 resolve(optimisedSVG)
-
-//             })
-
-//         })
-
-//     })
 
 module.exports = HtmlWebpackInlineSVGPlugin
