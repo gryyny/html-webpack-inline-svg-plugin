@@ -177,37 +177,34 @@ HtmlWebpackInlineSVGPlugin.prototype.getInlineImages = function (documentFragmen
  * @returns {boolean|Object}
  *
  */
-HtmlWebpackInlineSVGPlugin.prototype.getInlineImage = function (documentFragment) {
+HtmlWebpackInlineSVGPlugin.prototype.getInlineImage = function (documentFragment, inlineImage) {
 
-    let inlineImage = false
+  inlineImage = (typeof inlineImage !== 'undefined') ? inlineImage : null
 
-    if (documentFragment.childNodes && documentFragment.childNodes.length) {
+  if (documentFragment.childNodes && documentFragment.childNodes.length) {
 
-        documentFragment.childNodes.some((childNode) => {
+    documentFragment.childNodes.some((childNode) => {
 
-            if (childNode.nodeName === 'img') {
+      if (childNode.nodeName === 'img') {
 
-                if (_.filter(childNode.attrs, { name: 'inline' }).length) {
+        if (_.filter(childNode.attrs, { name: 'inline' }).length) {
 
-                    inlineImage = childNode
+          console.log('inlineImage = childNode')
 
-                    return true
+          inlineImage = childNode
+        }
 
-                }
+      } else if (childNode.childNodes && childNode.childNodes.length) {
 
-            } else if (childNode.childNodes && childNode.childNodes.length) {
+        inlineImage = this.getInlineImage(childNode, inlineImage)
 
-                return this.getInlineImage(childNode)
+      }
 
-            }
+    })
 
-            return false
+  }
 
-        })
-
-    }
-
-    return inlineImage
+  return inlineImage
 
 }
 
