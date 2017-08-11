@@ -100,34 +100,35 @@ HtmlWebpackInlineSVGPlugin.prototype.processImages = function (html) {
  * @returns {Promise}
  *
  */
-HtmlWebpackInlineSVGPlugin.prototype.getInlineImage = function (documentFragment, inlineImage) {
+HtmlWebpackInlineSVGPlugin.prototype.processImage = function (html) {
 
-  inlineImage = (typeof inlineImage !== 'undefined') ? inlineImage : null
+    return new Promise((resolve, reject) => {
 
-  if (documentFragment.childNodes && documentFragment.childNodes.length) {
+        // rebuild the document fragment each time with the updated html
+        const documentFragment = parse5.parseFragment(html, {
+            locationInfo: true,
+        })
 
-    documentFragment.childNodes.some((childNode) => {
+        const inlineImage = this.getInlineImage(documentFragment)
 
-      if (childNode.nodeName === 'img') {
+        if (inlineImage) {
 
-        if (_.filter(childNode.attrs, { name: 'inline' }).length) {
+            this.processOutputHtml(html, inlineImage)
+                .then((html) => {
 
-          console.log('inlineImage = childNode')
+                    resolve(html)
 
-          inlineImage = childNode
+                })
+                .catch((err) => reject(err))
+
+        } else {
+
+            // no inline image - just resolve
+            resolve(html)
+
         }
 
-      } else if (childNode.childNodes && childNode.childNodes.length) {
-
-        inlineImage = this.getInlineImage(childNode, inlineImage)
-
-      }
-
     })
-
-  }
-
-  return inlineImage
 
 }
 
